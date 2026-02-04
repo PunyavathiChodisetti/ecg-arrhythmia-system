@@ -2,8 +2,9 @@ import os
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from keras.models import Model
-from keras.layers import (
+import tensorflow as tf
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import (
     Input,
     Conv1D,
     MaxPooling1D,
@@ -12,19 +13,20 @@ from keras.layers import (
     Flatten,
     BatchNormalization
 )
-
-from keras.utils import to_categorical
-from keras.callbacks import EarlyStopping
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.callbacks import EarlyStopping
 
 # -------------------------------
-# PATHS (SAFE)
+# PATHS
 # -------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 X_PATH = os.path.join(BASE_DIR, "X.npy")
 Y_PATH = os.path.join(BASE_DIR, "y_encoded.npy")
 CLASSES_PATH = os.path.join(BASE_DIR, "classes.npy")
-MODEL_PATH = os.path.join(BASE_DIR, "ecg_cnn_model.keras")
+
+# 🔴 CHANGE HERE (SavedModel directory, NOT .keras file)
+MODEL_DIR = os.path.join(BASE_DIR, "ecg_saved_model")
 
 # -------------------------------
 # LOAD DATA
@@ -36,10 +38,8 @@ classes = np.load(CLASSES_PATH, allow_pickle=True)
 print("X shape:", X.shape)   # (samples, 1000, 12)
 print("y shape:", y.shape)
 
-# One-hot encode labels
 y_cat = to_categorical(y)
 
-# Train-test split (stratified)
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y_cat,
@@ -49,7 +49,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # -------------------------------
-# BUILD 1D CNN (KERAS 3 SAFE)
+# BUILD 1D CNN
 # -------------------------------
 inputs = Input(shape=(1000, 12))
 
@@ -110,9 +110,9 @@ loss, acc = model.evaluate(X_test, y_test, verbose=0)
 print("✅ CNN Test Accuracy:", acc)
 
 # -------------------------------
-# SAVE MODEL & CLASSES
+# SAVE MODEL (SavedModel format)
 # -------------------------------
-model.save(MODEL_PATH)
+model.save(MODEL_DIR, save_format="tf")
 np.save(CLASSES_PATH, classes)
 
-print("✅ CNN model saved at:", MODEL_PATH)
+print("✅ CNN SavedModel saved at:", MODEL_DIR)
