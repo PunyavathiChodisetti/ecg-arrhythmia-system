@@ -6,7 +6,7 @@ from backend.ml.cnn_inference import predict_ecg
 
 router = APIRouter()
 
-UPLOAD_DIR = "uploads"
+UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/predict")
@@ -38,7 +38,11 @@ async def predict_ecg_api(
     with open(hea_path, "wb") as f:
         shutil.copyfileobj(hea_file.file, f)
 
-    result = predict_ecg(os.path.join(UPLOAD_DIR, base_name), model, classes)
+    result = predict_ecg(
+        record_path=os.path.join(UPLOAD_DIR, base_name),
+        model=model,
+        classes=classes
+    )
 
     return {
         "filename": base_name,

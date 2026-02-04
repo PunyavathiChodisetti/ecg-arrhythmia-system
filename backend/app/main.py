@@ -27,7 +27,8 @@ app.add_middleware(
 def load_model():
     try:
         BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-        MODEL_PATH = os.path.join(BASE_DIR, "ml", "ecg_cnn_model.keras")
+
+        MODEL_PATH = os.path.join(BASE_DIR, "ml", "ecg_saved_model")
         CLASSES_PATH = os.path.join(BASE_DIR, "ml", "classes.npy")
 
         app.state.model = tf.keras.models.load_model(MODEL_PATH)
