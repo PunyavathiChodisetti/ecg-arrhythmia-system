@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import os
 import shutil
-from backend.ml.cnn_inference import predict_ecg
+from ml.cnn_inference import predict_ecg
 
 router = APIRouter()
 
