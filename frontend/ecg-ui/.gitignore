@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ML data
+backend/ml/*.npy
+data/
+
+# env files
+.env
+frontend/.env

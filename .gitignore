@@ -1,12 +1,4 @@
-
----
-
-### 🧹 **.gitignore (COPY–PASTE)**
-
-```gitignore
-# -----------------------
 # Python
-# -----------------------
 __pycache__/
 *.pyc
 *.pyo
@@ -14,34 +6,15 @@ __pycache__/
 *.log
 *.sqlite3
 
-# Virtual Environments
+# Virtual environments
 ecg_env/
 venv/
-.env/
 
-# -----------------------
-# Node / React
-# -----------------------
-node_modules/
-dist/
-build/
-
-# -----------------------
-# ML / Data
-# -----------------------
-data/ptb-xl/
-uploads/
-*.npy
-*.h5
-
-# -----------------------
-# OS
-# -----------------------
+# OS files
 .DS_Store
-Thumbs.db
 
-# -----------------------
-# IDE
-# -----------------------
-.vscode/
-.idea/
+# Node
+node_modules/
+
+# Uploads
+uploads/
