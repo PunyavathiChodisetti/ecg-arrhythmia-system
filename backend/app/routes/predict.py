@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 import os
 import shutil
 
@@ -11,11 +11,12 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/predict")
 async def predict_ecg_api(
+    request: Request,
     dat_file: UploadFile = File(...),
     hea_file: UploadFile = File(...)
 ):
-    model = router.model()
-    classes = router.classes()
+    model = request.app.state.model
+    classes = request.app.state.classes
 
     if model is None or classes is None:
         raise HTTPException(status_code=500, detail="Model not loaded on server")

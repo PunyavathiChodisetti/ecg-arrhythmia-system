@@ -6,9 +6,6 @@ import tensorflow as tf
 
 from backend.app.routes import predict
 
-# -------------------------------
-# FASTAPI APP
-# -------------------------------
 app = FastAPI(
     title="ECG Arrhythmia Detection API",
     description="AI-powered ECG Arrhythmia Detection System",
@@ -24,37 +21,28 @@ app.add_middleware(
 )
 
 # -------------------------------
-# GLOBAL MODEL STORAGE
-# -------------------------------
-MODEL = None
-CLASSES = None
-
-# -------------------------------
 # LOAD MODEL ON STARTUP
 # -------------------------------
 @app.on_event("startup")
 def load_model():
-    global MODEL, CLASSES
-
     try:
         BASE_DIR = os.path.dirname(os.path.dirname(__file__))
         MODEL_PATH = os.path.join(BASE_DIR, "ml", "ecg_cnn_model.keras")
         CLASSES_PATH = os.path.join(BASE_DIR, "ml", "classes.npy")
 
-        MODEL = tf.keras.models.load_model(MODEL_PATH)
-        CLASSES = np.load(CLASSES_PATH, allow_pickle=True)
+        app.state.model = tf.keras.models.load_model(MODEL_PATH)
+        app.state.classes = np.load(CLASSES_PATH, allow_pickle=True)
 
         print("✅ Model and classes loaded successfully")
 
     except Exception as e:
         print("❌ Failed to load model:", e)
+        app.state.model = None
+        app.state.classes = None
 
 # -------------------------------
 # ROUTES
 # -------------------------------
-predict.router.model = lambda: MODEL
-predict.router.classes = lambda: CLASSES
-
 app.include_router(predict.router)
 
 @app.get("/")
