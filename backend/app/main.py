@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.app.routes import predict
+from app.routes import predict
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
