@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /* ---------- Theme CSS ---------- */
 const THEME_CSS = `
@@ -35,8 +35,14 @@ body{
 .error{color:#f87171;margin-top:10px}
 `;
 
-/* ✅ Backend URL (Vercel ENV) */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+/* ---------- Types ---------- */
+type PredictionResult = {
+  filename: string;
+  prediction: string;
+  confidence: number;
+};
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
 function App() {
   /* Inject CSS */
@@ -47,12 +53,14 @@ function App() {
     return () => document.head.removeChild(style);
   }, []);
 
-  const [datFile, setDatFile] = useState(null);
-  const [heaFile, setHeaFile] = useState(null);
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  /* ---------- State (STRICT TYPES) ---------- */
+  const [datFile, setDatFile] = useState<File | null>(null);
+  const [heaFile, setHeaFile] = useState<File | null>(null);
+  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
+  /* ---------- Submit ---------- */
   const handleSubmit = async () => {
     if (!API_BASE_URL) {
       setError("Backend URL not configured");
@@ -69,8 +77,8 @@ function App() {
     formData.append("hea_file", heaFile);
 
     setLoading(true);
-    setError(null);
     setResult(null);
+    setError(null);
 
     try {
       const response = await fetch(`${API_BASE_URL}/predict`, {
@@ -79,24 +87,24 @@ function App() {
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.detail || "Prediction failed");
+        throw new Error("Prediction failed");
       }
 
-      const data = await response.json();
+      const data: PredictionResult = await response.json();
       setResult(data);
-    } catch (err) {
-      setError(err.message || "Failed to connect to backend");
+    } catch (err: unknown) {
+      setError("Failed to connect to backend or invalid ECG files");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ---------- UI ---------- */
   return (
     <div className="app">
       <h1>ECG Arrhythmia Detection System</h1>
       <p className="muted">
-        Upload PTB-XL ECG <b>.dat</b> and <b>.hea</b> files to analyze heart rhythm
+        Upload PTB-XL ECG <b>.dat</b> and <b>.hea</b> files
       </p>
 
       <div className="card" style={{ marginTop: 20 }}>
@@ -104,14 +112,14 @@ function App() {
           type="file"
           accept=".dat"
           className="input"
-          onChange={(e) => setDatFile(e.target.files?.[0] || null)}
+          onChange={(e) => setDatFile(e.target.files?.[0] ?? null)}
         />
 
         <input
           type="file"
           accept=".hea"
           className="input"
-          onChange={(e) => setHeaFile(e.target.files?.[0] || null)}
+          onChange={(e) => setHeaFile(e.target.files?.[0] ?? null)}
         />
 
         <button className="btn" onClick={handleSubmit} disabled={loading}>
@@ -127,8 +135,7 @@ function App() {
           <p><b>File:</b> {result.filename}</p>
           <p><b>Prediction:</b> {result.prediction}</p>
           <p>
-            <b>Confidence:</b>{" "}
-            {(result.confidence * 100).toFixed(2)}%
+            <b>Confidence:</b> {(result.confidence * 100).toFixed(2)}%
           </p>
         </div>
       )}
