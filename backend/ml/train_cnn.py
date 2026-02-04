@@ -2,6 +2,7 @@ import os
 import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import (
     Conv1D, MaxPooling1D, Dense,
     Dropout, Flatten, BatchNormalization
@@ -44,7 +45,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 # BUILD 1D CNN
 # -------------------------------
 model = Sequential([
-    Conv1D(32, kernel_size=7, activation="relu", input_shape=(1000, 12)),
+    Input(shape=(1000, 12)),
+
+    Conv1D(32, kernel_size=7, activation="relu"),
     BatchNormalization(),
     MaxPooling1D(2),
 
