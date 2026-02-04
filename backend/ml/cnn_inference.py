@@ -2,7 +2,7 @@ import numpy as np
 import wfdb
 import tensorflow as tf
 
-model = tf.keras.models.load_model("backend/ml/ecg_cnn_model")
+model = tf.keras.models.load_model("backend/ml/ecg_cnn_model.keras")
 classes = np.load("backend/ml/classes.npy", allow_pickle=True)
 
 def preprocess_ecg(record_path):

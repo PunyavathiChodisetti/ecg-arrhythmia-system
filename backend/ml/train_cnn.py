@@ -78,7 +78,7 @@ loss, acc = model.evaluate(X_test, y_test)
 print("CNN Test Accuracy:", acc)
 
 # Save model
-model.save("backend/ml/ecg_cnn_model")
+model.save("backend/ml/ecg_cnn_model.keras")
 np.save("backend/ml/classes.npy", classes)
 
 print("CNN model saved successfully")
