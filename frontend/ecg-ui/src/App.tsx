@@ -42,18 +42,21 @@ type PredictionResult = {
   confidence: number;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? "";
 
 function App() {
-  /* Inject CSS */
+  /* ---------- Inject CSS (CORRECT cleanup) ---------- */
   useEffect(() => {
     const style = document.createElement("style");
     style.textContent = THEME_CSS;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
-  /* ---------- State (STRICT TYPES) ---------- */
+  /* ---------- State ---------- */
   const [datFile, setDatFile] = useState<File | null>(null);
   const [heaFile, setHeaFile] = useState<File | null>(null);
   const [result, setResult] = useState<PredictionResult | null>(null);
@@ -61,7 +64,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   /* ---------- Submit ---------- */
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (!API_BASE_URL) {
       setError("Backend URL not configured");
       return;
@@ -77,8 +80,8 @@ function App() {
     formData.append("hea_file", heaFile);
 
     setLoading(true);
-    setResult(null);
     setError(null);
+    setResult(null);
 
     try {
       const response = await fetch(`${API_BASE_URL}/predict`, {
@@ -90,9 +93,10 @@ function App() {
         throw new Error("Prediction failed");
       }
 
-      const data: PredictionResult = await response.json();
+      const data = (await response.json()) as PredictionResult;
       setResult(data);
-    } catch (err: unknown) {
+    } catch (err) {
+      console.error(err);
       setError("Failed to connect to backend or invalid ECG files");
     } finally {
       setLoading(false);
