@@ -1,17 +1,33 @@
+import os
 import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv1D, MaxPooling1D, Dense, Dropout, Flatten, BatchNormalization
+from tensorflow.keras.layers import (
+    Conv1D, MaxPooling1D, Dense,
+    Dropout, Flatten, BatchNormalization
+)
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import EarlyStopping
 
-# Load data
-X = np.load("backend/ml/X.npy")
-y = np.load("backend/ml/y_encoded.npy")
-classes = np.load("backend/ml/classes.npy", allow_pickle=True)
+# -------------------------------
+# PATHS (SAFE)
+# -------------------------------
+BASE_DIR = os.path.dirname(__file__)
 
-print("X:", X.shape)
-print("y:", y.shape)
+X_PATH = os.path.join(BASE_DIR, "X.npy")
+Y_PATH = os.path.join(BASE_DIR, "y_encoded.npy")
+CLASSES_PATH = os.path.join(BASE_DIR, "classes.npy")
+MODEL_PATH = os.path.join(BASE_DIR, "ecg_cnn_model.keras")
+
+# -------------------------------
+# LOAD DATA
+# -------------------------------
+X = np.load(X_PATH)
+y = np.load(Y_PATH)
+classes = np.load(CLASSES_PATH, allow_pickle=True)
+
+print("X shape:", X.shape)
+print("y shape:", y.shape)
 
 # One-hot encode labels
 y_cat = to_categorical(y)
@@ -77,8 +93,10 @@ model.fit(
 loss, acc = model.evaluate(X_test, y_test)
 print("CNN Test Accuracy:", acc)
 
-# Save model
-model.save("backend/ml/ecg_cnn_model.keras")
-np.save("backend/ml/classes.npy", classes)
+# -------------------------------
+# SAVE MODEL & CLASSES
+# -------------------------------
+model.save(MODEL_PATH)
+np.save(CLASSES_PATH, classes)
 
-print("CNN model saved successfully")
+print("✅ CNN model saved at:", MODEL_PATH)
