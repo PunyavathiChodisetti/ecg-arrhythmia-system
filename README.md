@@ -59,3 +59,15 @@ This project includes:
 
 ## 📂 Project Structure
 
+ecg-arrhythmia-system/
+├── backend/
+│ ├── app/ # FastAPI routes
+│ ├── ml/ # ML training & inference
+│ ├── uploads/ # Uploaded ECG files
+│ └── requirements.txt
+├── frontend/
+│ └── ecg-ui/ # React + TS frontend
+├── data/
+│ └── ptb-xl/ # Dataset (not pushed to Git)
+├── README.md
+└── .gitignore
